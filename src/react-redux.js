@@ -19,9 +19,9 @@ export const connect = (
   mergedProps
 ) => WrappedComponent => ownProps => {
   const { getState, subscribe, dispatch } = useContext(Store);
-  const [store, setStore] = useState(getState());
+  const [store, setStore] = useState(getState);
 
-  const handleStoreChange = () => setStore(getState());
+  const handleStoreChange = () => setStore(getState);
 
   useEffect(() => {
     const unsubscribe = subscribe(handleStoreChange);
@@ -81,9 +81,9 @@ export const connectAsClass = (
 
 export const useSelector = mapStateToProps => {
   const { getState, subscribe } = useContext(Store);
-  const [store, setStore] = useState(getState());
+  const [store, setStore] = useState(getState);
 
-  const handleStoreChange = () => setStore(getState());
+  const handleStoreChange = () => setStore(getState);
 
   useEffect(() => {
     const unsubscribe = subscribe(handleStoreChange);
