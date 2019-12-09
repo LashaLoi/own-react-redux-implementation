@@ -1,4 +1,4 @@
-import { createStore } from "redux";
+import { createStore } from "./redux/redux";
 
 const INCREMENT = "INCREMENT";
 const DECREMENT = "DECREMENT";

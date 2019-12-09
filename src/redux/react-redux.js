@@ -13,11 +13,7 @@ export const Provider = ({ store, children }) => {
   return <Store.Provider value={store}>{children}</Store.Provider>;
 };
 
-export const connect = (
-  mapStateToProps,
-  mapDispatchToProps,
-  mergedProps
-) => WrappedComponent => ownProps => {
+export const connect = (mstp, mdtp, mp) => WrappedComponent => ownProps => {
   const { getState, subscribe, dispatch } = useContext(Store);
   const [store, setStore] = useState(getState);
 
@@ -30,23 +26,18 @@ export const connect = (
     // eslint-disable-next-line
   }, []);
 
-  const state = isFn(mapStateToProps) && mapStateToProps(store, ownProps);
+  const state = isFn(mstp) && mstp(store, ownProps);
 
-  const actions =
-    isFn(mapDispatchToProps) && mapDispatchToProps(dispatch, ownProps);
+  const actions = isFn(mdtp) && mdtp(dispatch, ownProps);
 
-  const props = isFn(mergedProps)
-    ? mergedProps(state, actions, ownProps)
+  const props = isFn(mp)
+    ? mp(state, actions, ownProps)
     : handleMergedProps(state, actions, ownProps);
 
   return <WrappedComponent {...props} />;
 };
 
-export const connectAsClass = (
-  mapStateToProps,
-  mapDispatchToProps,
-  mergedProps
-) => WrappedComponent =>
+export const connectAsClass = (mstp, mdtp, mp) => WrappedComponent =>
   class extends React.Component {
     static contextType = Store;
 
@@ -64,22 +55,19 @@ export const connectAsClass = (
     }
 
     render() {
-      const state =
-        isFn(mapStateToProps) && mapStateToProps(this.state, this.props);
+      const state = isFn(mstp) && mstp(this.state, this.props);
 
-      const actions =
-        isFn(mapDispatchToProps) &&
-        mapDispatchToProps(this.context.dispatch, this.props);
+      const actions = isFn(mdtp) && mdtp(this.context.dispatch, this.props);
 
-      const props = isFn(mergedProps)
-        ? mergedProps(state, actions, this.props)
+      const props = isFn(mp)
+        ? mp(state, actions, this.props)
         : handleMergedProps(state, actions, this.props);
 
       return <WrappedComponent {...props} />;
     }
   };
 
-export const useSelector = mapStateToProps => {
+export const useSelector = mstp => {
   const { getState, subscribe } = useContext(Store);
   const [store, setStore] = useState(getState);
 
@@ -92,7 +80,7 @@ export const useSelector = mapStateToProps => {
     // eslint-disable-next-line
   }, []);
 
-  const state = isFn(mapStateToProps) && mapStateToProps(store);
+  const state = isFn(mstp) && mstp(store);
 
   return state;
 };
