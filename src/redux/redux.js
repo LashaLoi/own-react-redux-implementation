@@ -1,42 +1,35 @@
-class EventEmitter {
-  constructor() {
-    this.events = {};
-  }
-
-  subscribe(eventName, fn) {
-    if (!this.events[eventName]) this.events[eventName] = [];
-
-    this.events[eventName].push(fn);
-
-    return () => {
-      this.events[eventName] = this.events[eventName].filter(
-        eventFn => fn !== eventFn
-      );
-    };
-  }
-
-  emit(eventName, data) {
-    const event = this.events[eventName];
-
-    if (event) {
-      event.forEach(fn => {
-        fn.call(null, data);
-      });
-    }
-  }
-}
-
 export const createStore = (reducer, defaultState) => {
-  let state = reducer(defaultState, {});
-  let emitter = new EventEmitter();
+  if (!reducer) throw new Error("Reducer is not exist");
+  if (typeof reducer !== "function")
+    throw new Error("Reducer must be a function");
 
-  emitter.subscribe("change:state", dispatch => {
-    state = reducer(state, dispatch);
-  });
+  let handleState = reducer;
+  let state = defaultState || handleState(defaultState, {});
+  let handlers = [];
+
+  const getState = () => state;
+  const subscribe = cb => {
+    if (typeof cb !== "function")
+      throw new Error("Subscription callback must be a function");
+
+    handlers = [...handlers, cb];
+
+    return () => (handlers = handlers.filter(handlers => handlers !== cb));
+  };
+  const replaceReducer = nextReducer => {
+    if (typeof nextReducer !== "function")
+      throw new Error("Reducer must be a function");
+
+    handleState = nextReducer;
+  };
+  const dispatch = dispatch => handlers.forEach(handler => handler(dispatch));
+
+  subscribe(dispatch => (state = handleState(state, dispatch)));
 
   return {
-    getState: () => state,
-    dispatch: dispatch => emitter.emit("change:state", dispatch),
-    subscribe: cb => emitter.subscribe("change:state", cb)
+    getState,
+    dispatch,
+    replaceReducer,
+    subscribe
   };
 };
