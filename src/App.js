@@ -1,7 +1,7 @@
 import React from "react";
 import logo from "./logo.svg";
 
-import { connect } from "./redux/react-redux";
+import { connect } from "./react-redux";
 import { increment, decrement } from "./store";
 
 const App = ({ increment, decrement, count }) => (
