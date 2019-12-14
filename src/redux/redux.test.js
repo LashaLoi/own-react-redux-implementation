@@ -38,9 +38,9 @@ describe("test store", () => {
 
     it("test not valid reducer", () => {
       try {
-        createStore(null);
-      } catch (error) {
-        expect().toEqual();
+        createStore({});
+      } catch ({ message }) {
+        expect(message).toEqual("Reducer must be a function");
       }
     });
 
