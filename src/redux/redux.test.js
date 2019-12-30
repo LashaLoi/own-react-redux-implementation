@@ -26,7 +26,7 @@ describe("test store", () => {
       try {
         createStore();
       } catch ({ message }) {
-        expect(message).toEqual("Reducer is not exist");
+        expect(message).toEqual("Reducer must be a function");
       }
     });
 
